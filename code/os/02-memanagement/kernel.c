@@ -13,6 +13,7 @@ void start_kernel(void)
 	uart_puts("Hello, RVOS!\n");
 
 	page_init();
+	page_test(); //加上 page_test, 可以體會記憶體配置的狀況
 
 	while (1) {}; // stop here!
 }
