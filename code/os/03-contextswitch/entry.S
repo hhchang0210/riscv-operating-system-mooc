@@ -98,12 +98,21 @@
 .globl switch_to
 .balign 4
 switch_to:
-	csrrw	t6, mscratch, t6	# swap t6 and mscratch
+    /*
+	這段程式碼是 RISC-V 核心在進行行程切換 (context switch) 時的一個重要片段。它利用 mscratch 暫存器來安全地保存和恢復狀態，
+	特別是在第一次呼叫時進行特殊處理。
+	
+	*/
+	csrrw	t6, mscratch, t6	# swap t6 and mscratch 目的：在行程切換時，這個操作可以快速地將舊行程的堆疊指標從 mscratch 讀取到 t6，
+	                            # 同時將新行程的堆疊指標從 t6 寫入 mscratch，為下一個中斷或例外做準備。
+								# atomic operation，交換 mscratch 跟 t6
+								# 第一次 mscratch 我們已經設為 0, 所以 t6 也是 0
 	beqz	t6, 1f			# Note: the first time switch_to() is
 	                                # called, mscratch is initialized as zero
 					# (in sched_init()), which makes t6 zero,
 					# and that's the special case we have to
 					# handle with t6
+					# 因為 t6 = 0, 所以跳到 1f
 	reg_save t6			# save context of prev task
 
 	# Save the actual t6 register, which we swapped into
@@ -114,14 +123,25 @@ switch_to:
 
 1:
 	# switch mscratch to point to the context of the next task
-	csrw	mscratch, a0
-
+	# a0 是 RISC-V 組合語言中一個非常重要的暫存器，它有兩個主要用途：
+    # 1. 儲存函式的第一個參數
+	# 2. 儲存函式的回傳值
+	# 簡單來說，可以把 a0 想像成一個多功能的信差，它既能把參數傳遞給函式，也能把函式的結果帶回來。
+	csrw	mscratch, a0 # a0 就是 ctx_task 
+	                     # 這一行為下一個中斷預先準備好環境。它將新行程的堆疊指標預先存入 mscratch，讓中斷服務程式在任何時候都能快速、安全地找到正確的堆疊。
+                         # 但在這裡並沒有中斷, 所以其實把它刪除是沒有影響的
 	# Restore all GP registers
 	# Use t6 to point to the context of the new task
 	mv	t6, a0
 	reg_restore t6
 
 	# Do actual context switching.
+	/*
+	ret 偽指令實際上被組譯成 jalr x0, 0(ra) 這條基本指令。
+	jalr x0, 0(ra) 的作用就是無條件地跳轉到 ra 暫存器所指向的位址，而不進行任何連結或儲存回傳位址的操作。
+	因為在 sched.c 裡 ctx_task.ra = (reg_t) user_task0;
+	所以 ret 這裡會直接跳轉到 user_task0 的位置來執行
+	*/
 	ret
 
 .end
