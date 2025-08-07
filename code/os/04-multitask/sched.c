@@ -9,8 +9,8 @@ extern void switch_to(struct context *next);
  * In the standard RISC-V calling convention, the stack pointer sp
  * is always 16-byte aligned.
  */
-uint8_t __attribute__((aligned(16))) task_stack[MAX_TASKS][STACK_SIZE];
-struct context ctx_tasks[MAX_TASKS];
+uint8_t __attribute__((aligned(16))) task_stack[MAX_TASKS][STACK_SIZE]; // 03專案只有一個 task, 04專案則最多可以有 10 個 task
+struct context ctx_tasks[MAX_TASKS]; // 要執行的 task
 
 /*
  * _top is used to mark the max available position of ctx_tasks

@@ -8,7 +8,7 @@ void user_task0(void)
 	while (1) {
 		uart_puts("Task 0: Running...\n");
 		task_delay(DELAY);
-		task_yield();
+		task_yield(); // 利用 task_yield 來作到交換函數執行的效果, 這是協同式多任務 (cooperative multitasking), 不是搶佔式多任務 (preemptive multitasking)
 	}
 }
 
