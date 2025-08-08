@@ -112,8 +112,8 @@ trap_vector:
 	csrw	mscratch, t5
 
 	# call the C trap handler in trap.c
-	csrr	a0, mepc
-	csrr	a1, mcause
+	csrr	a0, mepc // mepc 存著 *(int *)0x00000000 = 100 這行的位置
+	csrr	a1, mcause // 在此例中是錯誤代碼 7
 	call	trap_handler
 
 	# trap_handler will return the return address via a0.
