@@ -38,7 +38,7 @@ reg_t trap_handler(reg_t epc, reg_t cause)
 		case 3:
 			uart_puts("software interruption!\n");
 			break;
-		case 7:
+		case 7: //中斷處理 (timer_handler)：當計時器中斷發生後，Trap 處理常式會根據 mcause 的值（為 7）呼叫 timer_handle
 			uart_puts("timer interruption!\n");
 			timer_handler();
 			break;

@@ -10,7 +10,7 @@ void timer_load(int interval)
 {
 	/* each CPU has a separate source of timer interrupts. */
 	int id = r_mhartid();
-	
+	//	CLINT_MTIMECMP 是一個記憶體映射的暫存器，用於設定下一個定時器中斷應該發生的時間點。
 	*(uint64_t*)CLINT_MTIMECMP(id) = *(uint64_t*)CLINT_MTIME + interval;
 }
 
