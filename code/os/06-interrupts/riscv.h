@@ -9,6 +9,10 @@
 
 static inline reg_t r_tp()
 {
+	/*
+	這是一個常見的設計：在作業系統啟動的初期，M-Mode 的程式碼會讀取 mhartid 這個特權暫存器，然後將其值儲存到每個核心的 tp 暫存器中。這樣一來，
+	後續的 C 語言程式碼就可以隨時透過 r_tp() 這個簡單的函式，快速地知道自己目前在哪一個 CPU 核心上運行，而不需要執行讀取特權 CSR 的指令。
+	*/
 	reg_t x;
 	asm volatile("mv %0, tp" : "=r" (x) );
 	return x;

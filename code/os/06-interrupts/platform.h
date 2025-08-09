@@ -58,7 +58,15 @@
 #define PLIC_BASE 0x0c000000L
 #define PLIC_PRIORITY(id) (PLIC_BASE + (id) * 4)
 #define PLIC_PENDING(id) (PLIC_BASE + 0x1000 + ((id) / 32) * 4)
+
+//基底位址 (Base Address) + 核心偏移 (Hart Offset) + 中斷 ID 偏移 (ID Offset)
+//這行程式碼的最終目的就是為每個核心提供一個獨立的、可編程的介面，來控制哪些中斷可以被該核心接收。
 #define PLIC_MENABLE(hart, id) (PLIC_BASE + 0x2000 + (hart) * 0x80 + ((id) / 32) * 4)
+
+//在 PLIC 的記憶體映射空間中，不同的暫存器區塊有不同的偏移量。
+//0x0000 到 0x1000 範圍通常是中斷優先級暫存器。
+//0x1000 到 0x2000 範圍通常是待處理 (pending) 暫存器。
+//0x200000 這個巨大的偏移量，則標示了每個核心專屬的控制區塊的起點。這個區塊包含每個核心的中斷優先級閾值和中斷索取/完成 (claim/complete) 暫存器。
 #define PLIC_MTHRESHOLD(hart) (PLIC_BASE + 0x200000 + (hart) * 0x1000)
 #define PLIC_MCLAIM(hart) (PLIC_BASE + 0x200004 + (hart) * 0x1000)
 #define PLIC_MCOMPLETE(hart) (PLIC_BASE + 0x200004 + (hart) * 0x1000)

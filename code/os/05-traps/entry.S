@@ -117,14 +117,29 @@ trap_vector:
 	call	trap_handler
 
 	# trap_handler will return the return address via a0.
-	csrw	mepc, a0
+	csrw	mepc, a0 // a0 = *(int *)0x00000000 = 100 這行的位置
 
 	# restore context(registers).
 	csrr	t6, mscratch
 	reg_restore t6
 
 	# return to whatever we were doing before trap.
-	mret
+	/*
+	mret 是 RISC-V 機器模式 (Machine Mode) 下的一個特權指令，它代表 Machine-mode Trap Return，也就是從中斷或例外中返回。
+    這條指令的作用遠不止於簡單的跳轉，它會原子性地恢復處理器在進入中斷前的狀態，確保程式能夠無縫地從中斷點繼續執行。
+	當 mret 指令被執行時，處理器硬體會自動執行以下三個關鍵操作：
+    1.恢復程式計數器 (Program Counter): 處理器會將 mepc (Machine Exception Program Counter) 暫存器的值，寫入到程式計數器 (PC) 中。
+	2.恢復特權模式 (Privilege Mode)
+      處理器會讀取 mstatus 暫存器中的 MPP (Machine Previous Privilege) 欄位
+      MPP 欄位儲存了中斷發生前，處理器所在的特權模式（例如使用者模式 User Mode 或監督者模式 Supervisor Mode）。
+      處理器會將當前的特權模式切換回 MPP 所儲存的值，讓程式返回到它原有的特權等級。
+	3. 恢復中斷使能狀態 (Interrupt Enable)
+      處理器會讀取 mstatus 暫存器中的 MPIE (Machine Previous Interrupt Enable) 欄位。
+      MPIE 儲存了中斷發生前，中斷是否被啟用的狀態。
+      處理器會將 MPIE 的值複製到 mstatus 的 MIE (Machine Interrupt Enable) 欄位，從而恢復中斷的使能狀態。
+	*/
+	mret // mepc 存的是 *(int *)0x00000000 = 100 這行的位置 -> 所以執行原來程式會發現一直印出 panic
+	     
 
 # void switch_to(struct context *next);
 # a0: pointer to the context of the next task
