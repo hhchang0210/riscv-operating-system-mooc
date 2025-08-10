@@ -31,6 +31,11 @@ void start_kernel(void)
 	os_main();
 
 	schedule();
+	/*
+	示範使用 interrupt 來切換任務，達到 pre-emptive 的效果
+	1. 用 soft interrupt 來切換：task_yield();
+	2. 用 time interrupt 來切換： timer_handler() + schedule();
+	*/
 
 	uart_puts("Would not go here!\n");
 	while (1) {}; // stop here!

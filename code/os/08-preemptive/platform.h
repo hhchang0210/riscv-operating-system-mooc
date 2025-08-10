@@ -89,6 +89,22 @@
   * interrupt can be cleared by writing 0 to the MSIP bit in mip.
   * On reset, each msip register is cleared to zero.
   */
+/*
+
+CLINT (Core-Local Interruptor)
+作用範圍：CLINT 是一個核心本地 (core-local) 的中斷控制器 。
+處理類型：它處理與核心直接相關的中斷，包括：
+1. 定時器中斷 (Timer Interrupt)：由 CLINT 內的定時器觸發，用於時間片排程等 。
+2. 軟體中斷 (Software Interrupt)：由一個核心發出，可以發送給同一個或另一個核心，常用於核心間通訊 。
+PLIC 和 CLINT 是 RISC-V 架構中兩種不同的中斷控制器，它們的差異在於
+作用範圍和處理的中斷類型 。
+
+PLIC (Platform-Level Interrupt Controller)
+作用範圍：PLIC 是一個平台級 (platform-level) 的中斷控制器 。
+處理類型：它處理來自所有外部設備的中斷，例如：
+外部中斷 (External Interrupt)：來自 UART、網路卡、硬碟控制器等外部設備 。
+*/
+
 #define CLINT_BASE 0x2000000L
 #define CLINT_MSIP(hartid) (CLINT_BASE + 4 * (hartid))
 #define CLINT_MTIMECMP(hartid) (CLINT_BASE + 0x4000 + 8 * (hartid))

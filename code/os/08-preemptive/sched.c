@@ -70,8 +70,11 @@ int task_create(void (*start_routin)(void))
 void task_yield()
 {
 	/* trigger a machine-level software interrupt */
+	//*(uint32_t*)CLINT_MSIP(id) = 1; 這行程式碼的作用，就是透過寫入一個非零值，明確地發出一個軟體中斷訊號 。
 	int id = r_mhartid();
 	*(uint32_t*)CLINT_MSIP(id) = 1;
+	//*(uint32_t*)CLINT_MSIP(id) = 1; 觸發了一個軟體中斷，導致程式跳轉到**trap_vector** 開始執行中斷處理邏輯。
+	//然後跑到 reg_t trap_handler(reg_t epc, reg_t cause) 
 }
 
 /*

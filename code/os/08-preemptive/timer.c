@@ -35,5 +35,5 @@ void timer_handler()
 
 	timer_load(TIMER_INTERVAL);
 
-	schedule();
+	schedule();  // switch task
 }
