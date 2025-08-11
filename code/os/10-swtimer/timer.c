@@ -8,7 +8,8 @@ extern void schedule(void);
 static uint32_t _tick = 0;
 
 #define MAX_TIMER 10
-static struct timer timer_list[MAX_TIMER];
+static struct timer timer_list[MAX_TIMER]; //用一個 array 來裝 software timmer
+                                           //實作上是去檢查這個 array 裡, 有沒有超過我們設定的時間, 如果有就去執行 timer 裡面的指的函數
 
 /* load timer interval(in ticks) for next timer interrupt.*/
 void timer_load(int interval)
@@ -111,7 +112,7 @@ void timer_handler()
 	_tick++;
 	printf("tick: %d\n", _tick);
 
-	timer_check();
+	timer_check();檢查 timer_list 裡, 有沒有超過我們設定的時間, 如果有就去執行 timer 裡面的指的函數
 
 	timer_load(TIMER_INTERVAL);
 

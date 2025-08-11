@@ -19,6 +19,7 @@ void timer_func(void *arg)
 
 	param->counter++;
 	printf("======> TIMEOUT: %s: %d\n", param->str, param->counter);
+	
 }
 
 void user_task0(void)
