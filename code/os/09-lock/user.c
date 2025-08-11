@@ -8,6 +8,9 @@ void user_task0(void)
 {
 	uart_puts("Task 0: Created!\n");
 	while (1) {
+	/*
+	在這裡可以用 spin_lock 來確保下面 critical section 的部份一定會執行完, 不會被 timer intertrupt 給中斷去執行 task1
+	*/	
 #ifdef USE_LOCK
 		spin_lock();
 #endif
@@ -27,6 +30,7 @@ void user_task1(void)
 {
 	uart_puts("Task 1: Created!\n");
 	while (1) {
+		// task1 會被 timer interrupt, 然後把執行權交給 task0
 		uart_puts("Task 1: Begin ... \n");
 		for (int i = 0; i < 5; i++) {
 			uart_puts("Task 1: Running... \n");
