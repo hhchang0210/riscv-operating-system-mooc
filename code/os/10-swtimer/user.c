@@ -25,6 +25,8 @@ void timer_func(void *arg)
 void user_task0(void)
 {
 	uart_puts("Task 0: Created!\n");
+    //加上三個不同時間的 software timer
+	//所以這個程式會一直跑hardware timer, 中間三個 software timer時間到就執行, 之後就一直跑 hardare timer
 
 	struct timer *t1 = timer_create(timer_func, &person, 3);
 	if (NULL == t1) {
