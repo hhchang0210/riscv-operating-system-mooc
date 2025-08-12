@@ -18,14 +18,17 @@ void user_task0(void)
 	//printf("hart id is %d\n", hid);
 
 #ifdef CONFIG_SYSCALL
-	int ret = -1;
-	ret = gethid(&hid);
+	int ret = -1; 
+	ret = gethid(&hid); //&hid 傳到 usys.S 中的 gethid, 是存到 a0。可以注意最後在 sys_gethid((unsigned int *)(cxt->a0)); 這個a0就是 &hid！
 	//ret = gethid(NULL);
 	if (!ret) {
 		printf("system call returned!, hart id is %d\n", hid);
 	} else {
 		printf("gethid() failed, return: %d\n", ret);
 	}
+
+	int result = sum(10, 20);
+	printf("10 + 20 = %d\n", result);
 #endif
 
 	while (1){

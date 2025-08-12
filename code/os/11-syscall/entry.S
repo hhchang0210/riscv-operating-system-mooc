@@ -100,7 +100,7 @@
 trap_vector:
 	# save context(registers).
 	csrrw	t6, mscratch, t6	# swap t6 and mscratch
-	reg_save t6
+	reg_save t6 // 包括 a0 存著 &hid 都會被存在 t6 裡
 
 	# Save the actual t6 register, which we swapped into
 	# mscratch
@@ -113,7 +113,7 @@ trap_vector:
 	STORE	a0, 31*SIZE_REG(t5)
 
 	# Restore the context pointer into mscratch
-	csrw	mscratch, t5
+	csrw	mscratch, t5 // t5 現在是存放 current context. 因為 t5 可能會被下面的 call trap_handler 而改變, 所以要先存在 mscratch 裡
 
 	# call the C trap handler in trap.c
 	csrr	a0, mepc
