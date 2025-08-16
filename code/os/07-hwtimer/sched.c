@@ -19,6 +19,27 @@ struct context ctx_tasks[MAX_TASKS];
 static int _top = 0;
 static int _current = -1;
 
+/*
+設定 mscratch ＝ 0, 但之後在 entry.S
+  1:
+	# switch mscratch to point to the context of the next task
+	csrw	mscratch, a0
+  這樣就把mscratch 指向要執行的任務！
+  接下來執行trap_vector:
+	# save context(registers).
+	csrrw	t6, mscratch, t6	# swap t6 and mscratch
+	reg_save t6
+  就沒有這個問題！
+  
+  那也就是如果 riscv-operating-system-mooc 沒有先作 switch_to 這個動作（沒有設定 mscracth），而直接等待 timer interrupt, 
+  然後執行 trap_vector 應該就會發生錯誤！
+  可以在 start_kerkel 裡修改一下,         
+         os_main();
+        while (1) {printf("here!!");};
+  這樣等 timer interrupt 時就會當掉！
+*/
+
+
 void sched_init()
 {
 	w_mscratch(0);
